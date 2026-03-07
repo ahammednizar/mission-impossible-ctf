@@ -1,0 +1,19 @@
+Project Mission Impossible – Boot2Root CTF
+
+Download the vulnerable virtual machine:
+
+Google Drive:
+https://drive.google.com/file/d/1iLI5ywbKV1GJAbinC7J8gkuevd62ZG8n/view?usp=sharing
+
+File:
+Project_Mission_Impossible.ova
+
+Size:
+~2.5GB
+
+Platform:
+VirtualBox
+
+Security Notice:
+This machine contains intentional vulnerabilities.
+Run only inside an isolated lab environment.

